@@ -8,4 +8,8 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <declare-styleable name="AvatarView">
+        <attr name="stroke_color" format="color"/>
+        <attr name="stroke_width" format="dimension" />
+    </declare-styleable>
 </resources>
