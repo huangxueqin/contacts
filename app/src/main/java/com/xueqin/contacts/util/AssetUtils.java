@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AssetUtils {
+
+    private static final String TAG = "AssetUtils";
 
     private static final String CONTACT_ASSET_NAME = "contacts.json";
 
@@ -63,6 +66,7 @@ public class AssetUtils {
     @Nullable
     public static Bitmap loadAvatar(@NonNull Context context, @NonNull String avatarFileName) {
         String targetPath = getAvatarAssetPath(context, avatarFileName);
+        Log.d(TAG, "target avatar path is " + targetPath);
         try {
             return BitmapFactory.decodeStream(context.getAssets().open(targetPath));
         } catch (IOException e) {
@@ -73,12 +77,12 @@ public class AssetUtils {
 
     @NonNull
     private static String getAvatarAssetPath(@NonNull Context context, @NonNull String avatarFileName) {
-        String avatarFileNameWithoutExtension = avatarFileName.split(".")[0];
+        String avatarFileNameWithoutExtension = avatarFileName.split("\\.")[0];
         float screenDensity = ScreenUtils.getDensity(context);
-        if (screenDensity < 2f) {
+        if (screenDensity < 1.5f) {
             // lower than xhdpi
             return AVATAR_ASSET_FOLDER + "/" + avatarFileName;
-        } else if (screenDensity < 3f) {
+        } else if (screenDensity < 2.5f) {
             // lower than xxhdpi
             return AVATAR_ASSET_FOLDER + "/" + avatarFileNameWithoutExtension + "@2x.png";
         } else {

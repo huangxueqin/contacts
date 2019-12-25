@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.xueqin.contacts.widget.AvatarView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/iv_avatar"
+    android:layout_width="@dimen/avatar_size"
+    android:layout_height="@dimen/avatar_size"
+    android:scaleType="fitXY" />
