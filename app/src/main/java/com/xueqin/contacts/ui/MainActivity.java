@@ -1,4 +1,4 @@
-package com.xueqin.contacts;
+package com.xueqin.contacts.ui;
 
 import android.os.Bundle;
 import android.view.View;
@@ -9,11 +9,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.xueqin.contacts.R;
 import com.xueqin.contacts.model.ContactInfo;
-import com.xueqin.contacts.ui.AvatarListAdapter;
-import com.xueqin.contacts.ui.IntroductionListAdapter;
-import com.xueqin.contacts.ui.snap.ScrollSynchronizer;
-import com.xueqin.contacts.ui.snap.StartPagerSnapHelper;
+import com.xueqin.contacts.ui.adapter.AvatarListAdapter;
+import com.xueqin.contacts.ui.adapter.IntroductionListAdapter;
+import com.xueqin.contacts.ui.helper.AvatarHighlighter;
+import com.xueqin.contacts.ui.helper.AvatarListSlowScrollHelper;
+import com.xueqin.contacts.ui.helper.ContactScrollSynchronizer;
+import com.xueqin.contacts.ui.helper.StartPagerSnapHelper;
 import com.xueqin.contacts.util.AssetUtils;
 
 import java.util.List;
@@ -31,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private AvatarListAdapter mAvatarListAdapter;
     private IntroductionListAdapter mIntroductionListAdapter;
 
-    private ScrollSynchronizer mScrollHelper;
+    private ContactScrollSynchronizer mScrollSynchronizer;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,31 +58,27 @@ public class MainActivity extends AppCompatActivity {
         initAvatarListView();
         initIntroductionListView();
         // sync the scroll behavior of the two list
-        mScrollHelper = ScrollSynchronizer.syncContactScroll(mAvatarListView, mIntroductionListView);
-        // handle select item change
-        mScrollHelper.registerPositionChangeListener(new ScrollSynchronizer.OnPositionChangeListener() {
-            @Override
-            public void onPositionChange(int lastPosition, int currentPosition) {
-                onSelectAvatarChanged(currentPosition);
-            }
-        });
+        mScrollSynchronizer = ContactScrollSynchronizer.syncContactScroll(this, mAvatarListView, mIntroductionListView);
     }
 
     private void initAvatarListView() {
         mAvatarListView = findViewById(R.id.avatar_list);
         mAvatarListView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         new LinearSnapHelper().attachToRecyclerView(mAvatarListView);
-        // fixme: maybe better to use itemDecoration to add extra padding
-        mAvatarListView.setPadding(computeExtraOffsetOfAvatarList(), 0, computeExtraOffsetOfAvatarList(), 0);
+        // TODO: use itemDecoration maybe a better idea than use padding trick
+        mAvatarListView.setPadding(computeAvatarListPaddingSize(), 0, computeAvatarListPaddingSize(), 0);
         mAvatarListView.setClipToPadding(false);
         // init adapter
         mAvatarListAdapter = new AvatarListAdapter(this, mContactList);
         mAvatarListView.setAdapter(mAvatarListAdapter);
+        // add highlight support
+        AvatarHighlighter.trackHighlight(mAvatarListView);
         // add click listener
         mAvatarListAdapter.setOnAvatarItemClickListener(new AvatarListAdapter.OnAvatarItemClickListener() {
             @Override
             public void onClicked(View itemView, int position) {
-                mScrollHelper.setCurrentActiveScroller(mAvatarListView, position, true);
+                mScrollSynchronizer.setAvatarListActive();
+                AvatarListSlowScrollHelper.smoothScrollToPosition(mAvatarListView, position, 500);
             }
         });
     }
@@ -93,25 +92,10 @@ public class MainActivity extends AppCompatActivity {
         mIntroductionListView.setAdapter(mIntroductionListAdapter);
     }
 
-    private int computeExtraOffsetOfAvatarList() {
+    private int computeAvatarListPaddingSize() {
         int screenWidth = getResources().getDisplayMetrics().widthPixels;
         int avatarSize = getResources().getDimensionPixelSize(R.dimen.avatar_size);
         return (screenWidth - avatarSize) / 2;
     }
 
-    private void onSelectAvatarChanged(int position) {
-        if (mAvatarListView == null || mAvatarListView.getLayoutManager() == null) {
-            return;
-        }
-        final RecyclerView.LayoutManager lm = mAvatarListView.getLayoutManager();
-        final int childCount = lm.getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            View child = lm.getChildAt(i);
-            if (child == null) {
-                return;
-            }
-            int childPosition = mAvatarListView.getChildAdapterPosition(child);
-            child.setSelected(childPosition == position);
-        }
-    }
 }

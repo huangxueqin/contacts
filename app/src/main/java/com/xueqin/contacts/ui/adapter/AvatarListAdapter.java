@@ -1,4 +1,4 @@
-package com.xueqin.contacts.ui;
+package com.xueqin.contacts.ui.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;

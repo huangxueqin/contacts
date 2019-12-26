@@ -1,4 +1,4 @@
-package com.xueqin.contacts.ui.snap;
+package com.xueqin.contacts.ui.helper;
 
 import android.graphics.PointF;
 import android.view.View;
