@@ -22,8 +22,6 @@ public class AvatarView extends AppCompatImageView {
     private int mStrokeColor;
     private Paint mStrokePaint;
 
-    private boolean mShowAvatarStroke;
-
     private Path mClipPath = new Path();
     private RectF mTmpRect = new RectF();
 
@@ -40,6 +38,12 @@ public class AvatarView extends AppCompatImageView {
         init(context, attrs);
     }
 
+    @Override
+    public void setSelected(boolean selected) {
+        super.setSelected(selected);
+        invalidate();
+    }
+
     private void init(Context context, AttributeSet attrs) {
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.AvatarView);
         mStrokeColor = ta.getColor(R.styleable.AvatarView_stroke_color, DEFAULT_STROKE_COLOR);
@@ -53,13 +57,6 @@ public class AvatarView extends AppCompatImageView {
         mStrokePaint.setStyle(Paint.Style.STROKE);
         mStrokePaint.setStrokeWidth(mStrokeWidth);
         mStrokePaint.setAntiAlias(true);
-    }
-
-    public void showAvatarStroke(boolean showAvatarStroke) {
-        if (mShowAvatarStroke != showAvatarStroke) {
-            mShowAvatarStroke = showAvatarStroke;
-            invalidate();
-        }
     }
 
     public void setStrokeWidth(int strokeWidth) {
@@ -97,8 +94,8 @@ public class AvatarView extends AppCompatImageView {
         super.onDraw(canvas);
         canvas.restore();
         // draw stroke
-        if (d > mStrokeWidth && mShowAvatarStroke) {
-            canvas.drawCircle(w/2, h/2, (d-mStrokeWidth)/2, mStrokePaint);
+        if (d > mStrokeWidth && isSelected()) {
+            canvas.drawCircle(w/2, h/2, (d-mStrokeWidth)/2+1, mStrokePaint);
         }
     }
 }
