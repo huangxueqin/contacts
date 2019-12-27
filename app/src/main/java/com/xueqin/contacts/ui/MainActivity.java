@@ -1,10 +1,13 @@
 package com.xueqin.contacts.ui;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,7 +20,6 @@ import com.xueqin.contacts.ui.helper.AvatarHighlighter;
 import com.xueqin.contacts.ui.helper.AvatarListSlowScrollHelper;
 import com.xueqin.contacts.ui.helper.ContactScrollSynchronizer;
 import com.xueqin.contacts.ui.helper.StartPagerSnapHelper;
-import com.xueqin.contacts.util.AssetUtils;
 
 import java.util.List;
 
@@ -30,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView mAvatarListView;
     private RecyclerView mIntroductionListView;
 
-    private List<ContactInfo> mContactList;
     private AvatarListAdapter mAvatarListAdapter;
     private IntroductionListAdapter mIntroductionListAdapter;
 
@@ -40,13 +41,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mContactList = AssetUtils.loadAllContacts(this);
         initViews();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+        // observe contact info loading result
+        ViewModelProviders.of(this).get(ContactViewModel.class)
+                .getContactList()
+                .observe(this, new Observer<List<ContactInfo>>() {
+                    @Override
+                    public void onChanged(List<ContactInfo> contactInfos) {
+                        Log.d(TAG, "avatar info changed");
+                        mAvatarListAdapter.setContactList(contactInfos);
+                        mIntroductionListAdapter.setContactList(contactInfos);
+                    }
+                });
     }
 
     @Override
@@ -69,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         mAvatarListView.setPadding(computeAvatarListPaddingSize(), 0, computeAvatarListPaddingSize(), 0);
         mAvatarListView.setClipToPadding(false);
         // init adapter
-        mAvatarListAdapter = new AvatarListAdapter(this, mContactList);
+        mAvatarListAdapter = new AvatarListAdapter(this);
         mAvatarListView.setAdapter(mAvatarListAdapter);
         // add highlight support
         AvatarHighlighter.trackHighlight(mAvatarListView);
@@ -88,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         mIntroductionListView.setLayoutManager(new LinearLayoutManager(this));
         new StartPagerSnapHelper().attachToRecyclerView(mIntroductionListView);
         // init adapter
-        mIntroductionListAdapter = new IntroductionListAdapter(this, mContactList);
+        mIntroductionListAdapter = new IntroductionListAdapter(this);
         mIntroductionListView.setAdapter(mIntroductionListAdapter);
     }
 
