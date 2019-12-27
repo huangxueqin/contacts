@@ -1,9 +1,12 @@
 package com.xueqin.contacts.ui;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
@@ -31,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView mAvatarListView;
     private RecyclerView mIntroductionListView;
+    private FrameLayout mAvatarListContainer;
+    private View mDividerView;
 
     private AvatarListAdapter mAvatarListAdapter;
     private IntroductionListAdapter mIntroductionListAdapter;
@@ -40,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        adjustWindowStyle();
         setContentView(R.layout.activity_main);
         initViews();
         // observe contact info loading result
@@ -60,7 +66,22 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    private void adjustWindowStyle() {
+        int systemUiFlag = getWindow().getDecorView().getSystemUiVisibility();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // light status bar
+            systemUiFlag |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // light navigation bar
+            systemUiFlag |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+        }
+        getWindow().getDecorView().setSystemUiVisibility(systemUiFlag);
+    }
+
     private void initViews() {
+        mAvatarListContainer = findViewById(R.id.avatar_list_container);
+        mDividerView = findViewById(R.id.divider);
         initAvatarListView();
         initIntroductionListView();
         // sync the scroll behavior of the two list
@@ -96,6 +117,16 @@ public class MainActivity extends AppCompatActivity {
         // init adapter
         mIntroductionListAdapter = new IntroductionListAdapter(this);
         mIntroductionListView.setAdapter(mIntroductionListAdapter);
+        // show top shadow when scroll
+        mIntroductionListView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    mDividerView.setVisibility(
+                            newState == RecyclerView.SCROLL_STATE_IDLE ? View.INVISIBLE : View.VISIBLE);
+                }
+            }
+        });
     }
 
     private int computeAvatarListPaddingSize() {

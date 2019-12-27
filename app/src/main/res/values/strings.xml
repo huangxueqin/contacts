@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Contacts</string>
     <string name="about_me">About me</string>
-    <string name="contact_user_name_format">%1$s %2$s</string>
+    <string name="contact_user_name_format"><![CDATA[<b>%1$s</b> %2$s]]></string>
 </resources>

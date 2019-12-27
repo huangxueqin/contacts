@@ -1,6 +1,9 @@
 package com.xueqin.contacts.ui.adapter;
 
 import android.content.Context;
+import android.os.Build;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,8 +52,7 @@ public class IntroductionListAdapter extends RecyclerView.Adapter<IntroductionLi
     @Override
     public void onBindViewHolder(@NonNull IntroductionViewHolder holder, int position) {
         final ContactInfo contactInfo = mContactList.get(position);
-        holder.nameText.setText(mContext.getResources()
-                .getString(R.string.contact_user_name_format, contactInfo.getFirstName(), contactInfo.getLastName()));
+        holder.nameText.setText(getNameText(contactInfo));
         holder.titleText.setText(contactInfo.getTitle());
         holder.introductionText.setText(contactInfo.getIntroduction());
         // when screen is horizontal we set itemView's height to wrap_content
@@ -64,6 +66,16 @@ public class IntroductionListAdapter extends RecyclerView.Adapter<IntroductionLi
     @Override
     public int getItemCount() {
         return mContactList == null ? 0 : mContactList.size();
+    }
+
+    private Spanned getNameText(ContactInfo contactInfo) {
+        String text = mContext.getResources()
+                .getString(R.string.contact_user_name_format, contactInfo.getFirstName(), contactInfo.getLastName());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT);
+        } else {
+            return Html.fromHtml(text);
+        }
     }
 
     class IntroductionViewHolder extends RecyclerView.ViewHolder {

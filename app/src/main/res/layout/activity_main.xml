@@ -7,17 +7,48 @@
     android:orientation="vertical"
     tools:context=".ui.MainActivity">
 
-    <!--  avatars  -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/avatar_list"
+    <androidx.appcompat.widget.Toolbar
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        style="@style/ToolbarStyle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:title="@string/app_name"
+        app:titleTextColor="@color/text_dark" />
+
+    <FrameLayout
+        android:id="@+id/avatar_list_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!--  avatars  -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/avatar_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/avatar_list_margin_top"
+            android:layout_marginBottom="@dimen/avatar_list_margin_bottom"/>
+
+    </FrameLayout>
+
+    <!--  simulate shadow  -->
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="?attr/colorPrimaryDark"
+        android:elevation="1px"
+        android:visibility="invisible"/>
 
     <!--  introductions  -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/introduction_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:scrollbars="vertical"/>
 
 </LinearLayout>
