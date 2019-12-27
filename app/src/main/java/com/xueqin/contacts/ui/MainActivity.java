@@ -118,15 +118,15 @@ public class MainActivity extends AppCompatActivity {
         mIntroductionListAdapter = new IntroductionListAdapter(this);
         mIntroductionListView.setAdapter(mIntroductionListAdapter);
         // show top shadow when scroll
-        mIntroductionListView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mIntroductionListView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                     mDividerView.setVisibility(
                             newState == RecyclerView.SCROLL_STATE_IDLE ? View.INVISIBLE : View.VISIBLE);
                 }
-            }
-        });
+            });
+        }
     }
 
     private int computeAvatarListPaddingSize() {
