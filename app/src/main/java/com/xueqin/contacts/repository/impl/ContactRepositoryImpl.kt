@@ -9,7 +9,6 @@ import com.xueqin.contacts.model.ContactInfo
 import com.xueqin.contacts.repository.ContactRepository
 import com.xueqin.contacts.util.ContactUtils
 import com.xueqin.contacts.util.IOUtils
-import org.json.JSONArray
 import java.io.IOException
 import java.lang.Exception
 
@@ -22,24 +21,10 @@ class ContactRepositoryImpl(context: Context) : ContactRepository {
 
     private val mContext = context.applicationContext
 
-    override fun queryAllContacts(): List<ContactInfo> {
-        val contacts = mutableListOf<ContactInfo>()
-        val text = IOUtils.readTextFromAsset(mContext, CONTACT_PATH)
-        if (text != null) {
-            try {
-                val contactJa = JSONArray(text)
-                for (i in 0 until contactJa.length()) {
-                    val contactInfo = ContactUtils.parseContactInfo(contactJa.getJSONObject(i))
-                    if (contactInfo != null) {
-                        contacts.add(contactInfo)
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+    override fun queryAllContacts(): List<ContactInfo> =
+        IOUtils.readTextFromAsset(mContext, CONTACT_PATH).let {
+            ContactUtils.parseContactList(it)
         }
-        return contacts
-    }
 
     override fun loadAvatar(contactInfo: ContactInfo): Bitmap? {
         try {
