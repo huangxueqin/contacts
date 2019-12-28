@@ -1,8 +1,6 @@
 package com.xueqin.contacts
 
 import com.xueqin.contacts.helper.createTestContactJSON
-import com.xueqin.contacts.util.ContactUtils
-import com.xueqin.contacts.util.IOUtils
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert.*
@@ -18,7 +16,7 @@ class ContactLoadInfoUnitTest {
     @Test
     fun contactInfo_parseSuccess() {
         val contactJo = createTestContactJSON()
-        val contactInfo = ContactUtils.parseContactInfo(contactJo)
+        val contactInfo = com.xueqin.contacts.data.util.ContactUtils.parseContactInfo(contactJo)
         assertNotNull(contactInfo)
         assertEquals("first name parsed", contactJo.getString("first_name"), contactInfo?.firstName)
         assertEquals("last name parsed", contactJo.getString("last_name"), contactInfo?.lastName)
@@ -31,19 +29,19 @@ class ContactLoadInfoUnitTest {
     fun contactInfoWithoutFirstName_parseFail() {
         val contactJo = createTestContactJSON();
         contactJo.put("first_name", "")
-        assertNull(ContactUtils.parseContactInfo(contactJo))
+        assertNull(com.xueqin.contacts.data.util.ContactUtils.parseContactInfo(contactJo))
     }
 
     @Test
     fun contactList_parseEmpty() {
         val text = "[]"
-        assertThat(ContactUtils.parseContactList(text).size, equalTo(0))
+        assertThat(com.xueqin.contacts.data.util.ContactUtils.parseContactList(text).size, equalTo(0))
     }
 
     @Test
     fun contactList_parseWrongFormat() {
         val text = "???"
-        assertThat(ContactUtils.parseContactList(text).size, equalTo(0))
+        assertThat(com.xueqin.contacts.data.util.ContactUtils.parseContactList(text).size, equalTo(0))
     }
 
     @Test
@@ -52,8 +50,8 @@ class ContactLoadInfoUnitTest {
          * test.json contains 5 correct contact info record
          */
         javaClass.classLoader?.getResourceAsStream("test.json")?.let {
-            val json = IOUtils.readTextFromStream(it)
-            val contacts = ContactUtils.parseContactList(json)
+            val json = com.xueqin.contacts.data.util.IOUtils.readTextFromStream(it)
+            val contacts = com.xueqin.contacts.data.util.ContactUtils.parseContactList(json)
             assertThat(contacts.size, equalTo(5))
             assertTrue(contacts.filter { it.firstName == "Carlos" }.isNotEmpty())
             assertTrue(contacts.filter { it.firstName == "Carlos" }[0].title == "Nurse")
@@ -62,7 +60,7 @@ class ContactLoadInfoUnitTest {
 
     @Test
     fun contactList_parseFail() {
-        assertThat(ContactUtils.parseContactList("???").size, equalTo(0))
+        assertThat(com.xueqin.contacts.data.util.ContactUtils.parseContactList("???").size, equalTo(0))
     }
 
 }

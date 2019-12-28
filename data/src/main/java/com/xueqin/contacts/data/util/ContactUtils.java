@@ -1,11 +1,11 @@
-package com.xueqin.contacts.util;
+package com.xueqin.contacts.data.util;
 
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.xueqin.contacts.model.ContactInfo;
+import com.xueqin.contact.model.ContactInfo;
 
 import org.json.JSONArray;
 import org.json.JSONException;

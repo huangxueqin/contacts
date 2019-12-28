@@ -1,4 +1,4 @@
-package com.xueqin.contacts.util;
+package com.xueqin.contacts.data.util;
 
 import android.content.Context;
 

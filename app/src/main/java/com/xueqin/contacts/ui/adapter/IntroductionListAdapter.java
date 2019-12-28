@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xueqin.contacts.R;
-import com.xueqin.contacts.model.ContactInfo;
+import com.xueqin.contact.model.ContactInfo;
 import com.xueqin.contacts.util.ScreenUtils;
 
 import java.util.List;

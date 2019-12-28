@@ -11,8 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xueqin.contacts.R;
-import com.xueqin.contacts.model.ContactInfo;
-import com.xueqin.contacts.util.AvatarLoader;
+import com.xueqin.contact.model.ContactInfo;
+import com.xueqin.contacts.loader.SimpleImageLoader;
 
 import java.util.List;
 
@@ -56,7 +56,7 @@ public class AvatarListAdapter extends RecyclerView.Adapter<AvatarListAdapter.Av
     @SuppressWarnings("all")
     @Override
     public void onBindViewHolder(@NonNull AvatarViewHolder holder, int position) {
-        AvatarLoader.getInstance(mContext).loadAvatar(holder.avatarView, mContactList.get(position));
+        SimpleImageLoader.getInstance().loadAvatar(holder.avatarView, mContactList.get(position).getAvatarFileName());
     }
 
     @Override

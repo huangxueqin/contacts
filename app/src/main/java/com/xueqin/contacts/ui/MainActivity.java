@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xueqin.contacts.R;
-import com.xueqin.contacts.model.ContactInfo;
+import com.xueqin.contact.model.ContactInfo;
 import com.xueqin.contacts.ui.adapter.AvatarListAdapter;
 import com.xueqin.contacts.ui.adapter.IntroductionListAdapter;
 import com.xueqin.contacts.ui.helper.AvatarHighlighter;
