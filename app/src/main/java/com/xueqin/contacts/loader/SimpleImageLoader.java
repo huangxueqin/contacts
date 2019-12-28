@@ -8,6 +8,7 @@ import android.util.Log;
 import android.util.LruCache;
 import android.widget.ImageView;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -54,9 +55,7 @@ public class SimpleImageLoader {
         mDownloader = downloader;
     }
 
-    /**
-     * should call in main thread
-     */
+    @MainThread
     public void loadAvatar(@NonNull final ImageView imageView, @NonNull final String url) {
         if (Looper.myLooper() != Looper.getMainLooper()) {
             Log.w(TAG, "load Avatar should call in main thread!!");

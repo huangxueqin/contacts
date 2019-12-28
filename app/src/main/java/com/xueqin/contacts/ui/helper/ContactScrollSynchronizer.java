@@ -1,6 +1,5 @@
 package com.xueqin.contacts.ui.helper;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.View;
 
@@ -17,8 +16,7 @@ public class ContactScrollSynchronizer {
 
     private static final String TAG = "ScrollSynchronizer";
 
-    public static ContactScrollSynchronizer syncContactScroll(@NonNull Context context,
-                                                              @NonNull RecyclerView avatarList,
+    public static ContactScrollSynchronizer syncContactScroll(@NonNull RecyclerView avatarList,
                                                               @NonNull RecyclerView introductionList) {
         if (!(avatarList.getLayoutManager() instanceof LinearLayoutManager &&
                 introductionList.getLayoutManager() instanceof LinearLayoutManager)) {
@@ -26,7 +24,6 @@ public class ContactScrollSynchronizer {
         }
         // create synchronizer instance
         ContactScrollSynchronizer synchronizer = new ContactScrollSynchronizer(
-                context,
                 (LinearLayoutManager) avatarList.getLayoutManager(),
                 (LinearLayoutManager) introductionList.getLayoutManager());
         // attach scroll listener
@@ -40,18 +37,14 @@ public class ContactScrollSynchronizer {
     private float mPositionOffsetPercent = 0f;
 
     @NonNull
-    private Context mContext;
-    @NonNull
     private LinearScrollHelper mAvatarScrollHelper;
     @NonNull
     private LinearScrollHelper mIntroductionScrollHelper;
     @Nullable
     private LinearScrollHelper mActiveScrollHelper;
 
-    private ContactScrollSynchronizer(@NonNull Context context,
-                                      @NonNull LinearLayoutManager avatarLm,
+    private ContactScrollSynchronizer(@NonNull LinearLayoutManager avatarLm,
                                       @NonNull LinearLayoutManager introductionLm) {
-        mContext = context.getApplicationContext();
         mAvatarScrollHelper = new LinearScrollHelper(avatarLm);
         mIntroductionScrollHelper = new LinearScrollHelper(introductionLm);
     }
@@ -60,13 +53,13 @@ public class ContactScrollSynchronizer {
         mActiveScrollHelper = mAvatarScrollHelper;
     }
 
-    public void setIntroductionListActive() {
-        mActiveScrollHelper = mIntroductionScrollHelper;
-    }
-
-    public void clearActiveList() {
-        mActiveScrollHelper = null;
-    }
+//    public void setIntroductionListActive() {
+//        mActiveScrollHelper = mIntroductionScrollHelper;
+//    }
+//
+//    public void clearActiveList() {
+//        mActiveScrollHelper = null;
+//    }
 
     private void onActiveListScrolled(RecyclerView recyclerView, int dx, int dy) {
         if (mActiveScrollHelper == null ||

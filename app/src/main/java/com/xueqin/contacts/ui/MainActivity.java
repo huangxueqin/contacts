@@ -4,7 +4,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,11 +29,9 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
-    private static final String KEY_AVATAR_POSITION = "avatar_position";
-
     private RecyclerView mAvatarListView;
     private RecyclerView mIntroductionListView;
-    private FrameLayout mAvatarListContainer;
+//    private FrameLayout mAvatarListContainer;
     private View mDividerView;
 
     private AvatarListAdapter mAvatarListAdapter;
@@ -80,12 +77,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        mAvatarListContainer = findViewById(R.id.avatar_list_container);
+//        mAvatarListContainer = findViewById(R.id.avatar_list_container);
         mDividerView = findViewById(R.id.divider);
         initAvatarListView();
         initIntroductionListView();
         // sync the scroll behavior of the two list
-        mScrollSynchronizer = ContactScrollSynchronizer.syncContactScroll(this, mAvatarListView, mIntroductionListView);
+        mScrollSynchronizer = ContactScrollSynchronizer.syncContactScroll(mAvatarListView, mIntroductionListView);
+
     }
 
     private void initAvatarListView() {

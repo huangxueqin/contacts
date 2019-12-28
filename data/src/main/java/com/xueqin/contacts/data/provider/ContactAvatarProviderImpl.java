@@ -7,7 +7,6 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.xueqin.contact.model.ContactInfo;
 import com.xueqin.contact.provider.ContactAvatarProvider;
 import com.xueqin.contacts.data.util.AssetAvatarResolver;
 
