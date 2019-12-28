@@ -1,6 +1,7 @@
-package com.xueqin.contacts
+package com.xueqin.contacts.data
 
-import com.xueqin.contacts.helper.createTestContactJSON
+import com.xueqin.contacts.data.helper.CONTACT_JSON
+import com.xueqin.contacts.data.util.ContactParser
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert.*
@@ -11,12 +12,12 @@ import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
-class ContactLoadInfoUnitTest {
+class ContactParserUnitTest {
 
     @Test
     fun contactInfo_parseSuccess() {
-        val contactJo = createTestContactJSON()
-        val contactInfo = com.xueqin.contacts.data.util.ContactUtils.parseContactInfo(contactJo)
+        val contactJo = CONTACT_JSON
+        val contactInfo = ContactParser.parseContactInfo(contactJo)
         assertNotNull(contactInfo)
         assertEquals("first name parsed", contactJo.getString("first_name"), contactInfo?.firstName)
         assertEquals("last name parsed", contactJo.getString("last_name"), contactInfo?.lastName)
@@ -27,21 +28,21 @@ class ContactLoadInfoUnitTest {
 
     @Test
     fun contactInfoWithoutFirstName_parseFail() {
-        val contactJo = createTestContactJSON();
+        val contactJo = CONTACT_JSON
         contactJo.put("first_name", "")
-        assertNull(com.xueqin.contacts.data.util.ContactUtils.parseContactInfo(contactJo))
+        assertNull(ContactParser.parseContactInfo(contactJo))
     }
 
     @Test
     fun contactList_parseEmpty() {
         val text = "[]"
-        assertThat(com.xueqin.contacts.data.util.ContactUtils.parseContactList(text).size, equalTo(0))
+        assertThat(ContactParser.parseContactList(text).size, equalTo(0))
     }
 
     @Test
     fun contactList_parseWrongFormat() {
         val text = "???"
-        assertThat(com.xueqin.contacts.data.util.ContactUtils.parseContactList(text).size, equalTo(0))
+        assertThat(ContactParser.parseContactList(text).size, equalTo(0))
     }
 
     @Test
@@ -51,7 +52,7 @@ class ContactLoadInfoUnitTest {
          */
         javaClass.classLoader?.getResourceAsStream("test.json")?.let {
             val json = com.xueqin.contacts.data.util.IOUtils.readTextFromStream(it)
-            val contacts = com.xueqin.contacts.data.util.ContactUtils.parseContactList(json)
+            val contacts = ContactParser.parseContactList(json)
             assertThat(contacts.size, equalTo(5))
             assertTrue(contacts.filter { it.firstName == "Carlos" }.isNotEmpty())
             assertTrue(contacts.filter { it.firstName == "Carlos" }[0].title == "Nurse")
@@ -60,7 +61,7 @@ class ContactLoadInfoUnitTest {
 
     @Test
     fun contactList_parseFail() {
-        assertThat(com.xueqin.contacts.data.util.ContactUtils.parseContactList("???").size, equalTo(0))
+        assertThat(ContactParser.parseContactList("???").size, equalTo(0))
     }
 
 }

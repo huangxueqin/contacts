@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContactUtils {
+public class ContactParser {
 
     @Nullable
     public static ContactInfo parseContactInfo(@Nullable JSONObject jsonObject) {

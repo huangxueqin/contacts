@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 
 import com.xueqin.contact.model.ContactInfo;
 import com.xueqin.contact.provider.ContactDataProvider;
-import com.xueqin.contacts.data.util.ContactUtils;
+import com.xueqin.contacts.data.util.ContactParser;
 import com.xueqin.contacts.data.util.IOUtils;
 
 import java.util.List;
@@ -22,6 +22,6 @@ public class ContactDataProviderImpl implements ContactDataProvider {
     @Override
     public List<ContactInfo> queryContacts(@NonNull Context context) {
         final String json = IOUtils.readTextFromAsset(context, CONTACT_INFO_PATH);
-        return ContactUtils.parseContactList(json);
+        return ContactParser.parseContactList(json);
     }
 }
