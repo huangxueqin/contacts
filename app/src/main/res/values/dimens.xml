@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="avatar_size">80dp</dimen>
+    <dimen name="avatar_size">100dp</dimen>
+    <dimen name="avatar_padding">10dp</dimen>
+    <!--  reduce 1dp to make sure avatar image covered by the ring  -->
+    <dimen name="avatar_highlight_inset">9dp</dimen>
+    <dimen name="avatar_highlight_width">4dp</dimen>
+
     <dimen name="avatar_list_margin_top">30dp</dimen>
     <dimen name="avatar_list_margin_bottom">20dp</dimen>
 

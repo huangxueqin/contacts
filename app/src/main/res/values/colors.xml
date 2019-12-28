@@ -6,4 +6,6 @@
 
     <color name="text_dark">#111111</color>
     <color name="text_light">#888888</color>
+
+    <color name="avatar_highlight">@android:color/holo_blue_light</color>
 </resources>
