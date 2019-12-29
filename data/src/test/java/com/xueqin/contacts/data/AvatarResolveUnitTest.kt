@@ -22,8 +22,7 @@ class AvatarResolveUnitTest {
     fun filename_splitCorrectly() {
         for (i in TEST_NAME_LIST.indices) {
             val nameWithoutExt = TEST_NAME_LIST[i]
-            val splits = "$nameWithoutExt.png".split("\\.".toRegex()).dropLastWhile { it.isEmpty() }
-                .toTypedArray()
+            val splits = "$nameWithoutExt.png".split("\\.".toRegex())
             assertThat(splits.size, equalTo(2))
             assertThat(splits[0], equalTo(nameWithoutExt))
             assertThat(splits[1], equalTo("png"))
