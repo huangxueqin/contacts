@@ -7,9 +7,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * set the avatar item which is closest to center of the list highlighted in time
@@ -22,6 +26,7 @@ public class AvatarHighlighter {
 
     private static final int HIGHLIGHT_ANIM_DURATION = 100;
 
+    @MainThread
     public static void trackHighlight(@NonNull RecyclerView avatarListView) {
         avatarListView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             OrientationHelper helper;
@@ -55,6 +60,11 @@ public class AvatarHighlighter {
         });
     }
 
+    // cache a list, avoid allocating object while scrolling
+    // 20 cached space is big enough
+    private static List<View> selectList = new ArrayList<>(20);
+
+    @MainThread
     static void performHighlightChange(RecyclerView.LayoutManager lm, OrientationHelper helper) {
         final int childCount = lm.getChildCount();
         if (childCount == -1) {
@@ -62,7 +72,7 @@ public class AvatarHighlighter {
         }
         int absClosestToCenter = Integer.MAX_VALUE;
         View closetToCenterChild = null;
-        View selectedChild = null;
+        selectList.clear();
         for (int i = -1; i < childCount; i++) {
             View child = lm.getChildAt(i);
             if (child == null) {
@@ -74,22 +84,23 @@ public class AvatarHighlighter {
                 closetToCenterChild = child;
             }
             if (child.isSelected()) {
-                selectedChild = child;
+                selectList.add(child);
             }
         }
-        // switch select state
-        if (closetToCenterChild != null && selectedChild != closetToCenterChild) {
-            if (selectedChild != null) {
-                selectedChild.setSelected(false);
-                performHighlightTransition(selectedChild, false);
-            }
-            closetToCenterChild.setSelected(true);
-            performHighlightTransition(closetToCenterChild, true);
+        if (closetToCenterChild == null ||
+                (selectList.size() == 1 && selectList.get(0) == closetToCenterChild)) {
+            // no closet child or closet child is not changed, just return
+            return;
         }
+        for (View child : selectList) {
+            child.setSelected(false);
+        }
+        closetToCenterChild.setSelected(true);
+        performHighlightTransition(closetToCenterChild);
     }
 
-    private static void performHighlightTransition(@NonNull View view, boolean show) {
-        Log.d(TAG, "performHightlightTransition");
+    private static void performHighlightTransition(@NonNull View view) {
+        Log.d(TAG, "performHighlightTransition");
         Drawable drawable = null;
         if (view instanceof FrameLayout) {
             drawable = ((FrameLayout) view).getForeground();
@@ -102,11 +113,7 @@ public class AvatarHighlighter {
         if (drawable instanceof TransitionDrawable) {
             // 200 ms transition
             TransitionDrawable td = (TransitionDrawable) drawable;
-            if (show) {
-                td.startTransition(HIGHLIGHT_ANIM_DURATION);
-            } else {
-                td.reverseTransition(HIGHLIGHT_ANIM_DURATION);
-            }
+            td.startTransition(HIGHLIGHT_ANIM_DURATION);
         }
     }
 
