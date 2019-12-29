@@ -1,0 +1,12 @@
+ext {
+    TARGET_SDK_VERSION = 29
+    MIN_SDK_VERSION = 15
+
+    COMPILE_SDK_VERSION = 29
+    BUILD_TOOLS_VERSION = '29.0.2'
+
+    kotlin_version = '1.3.50'
+
+    robolectric_version = '4.3.1'
+    mockito_version = '2.8.9'
+}
