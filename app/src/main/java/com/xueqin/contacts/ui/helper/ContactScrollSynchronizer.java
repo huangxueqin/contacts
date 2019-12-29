@@ -90,16 +90,6 @@ public class ContactScrollSynchronizer {
         Log.d(TAG, "by introduction list, current position = " + mPosition + ", offset percent = " + mPositionOffsetPercent);
         // scroll avatar list to corresponding position
         mAvatarScrollHelper.scrollToPositionWithOffset(mPosition, mPositionOffsetPercent);
-
-        /*
-         * use {@link LinearLayoutManager#scrollToPosition(int)} does not trigger
-         * {@link RecyclerView.OnScrollListener#onScrolled(RecyclerView, int, int)} callback
-         * so we here send notify this situation add an extra interface to detect such situation
-         */
-        if (Math.abs(mPositionOffsetPercent) < 0.000001f) {
-            AvatarHighlighter.performHighlightChange(mAvatarScrollHelper.layoutManager,
-                    mAvatarScrollHelper.orientationHelper);
-        }
     }
 
     private static final int ALIGN_CENTER = 0;

@@ -9,6 +9,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,45 +28,68 @@ public class AvatarHighlighter {
     private static final int HIGHLIGHT_ANIM_DURATION = 100;
 
     @MainThread
-    public static void trackHighlight(@NonNull RecyclerView avatarListView) {
-        avatarListView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            OrientationHelper helper;
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                if (newState == RecyclerView.SCROLL_STATE_IDLE && recyclerView.getLayoutManager() != null) {
-                    handleScrollChangeOnIdle(recyclerView);
-                }
-            }
-
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                if (recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
-                    handleScrollChangeOnIdle(recyclerView);
-                }
-            }
-
-            private void handleScrollChangeOnIdle(RecyclerView recyclerView) {
-                RecyclerView.LayoutManager lm = recyclerView.getLayoutManager();
-                ensureOrientationHelper(lm);
-                performHighlightChange(lm, helper);
-            }
-
-            private void ensureOrientationHelper(RecyclerView.LayoutManager lm) {
-                if (helper == null || helper.getLayoutManager() != lm) {
-                    helper = lm.canScrollHorizontally() ?
-                            OrientationHelper.createHorizontalHelper(lm) :
-                            OrientationHelper.createVerticalHelper(lm);
-                }
-            }
-        });
+    public static AvatarHighlighter trackHighlight(@NonNull RecyclerView avatarListView,
+                                      @NonNull RecyclerView introductionView) {
+        return new AvatarHighlighter(avatarListView, introductionView);
     }
+
+
+    @NonNull
+    private RecyclerView mAvatarList;
+    /**
+     * we only change highlight when scroll action comes from active list
+     */
+    @Nullable
+    private RecyclerView mActiveList;
+
+    private OrientationHelper mAvatarListHelper;
 
     // cache a list, avoid allocating object while scrolling
     // 20 cached space is big enough
-    private static List<View> selectList = new ArrayList<>(20);
+    private List<View> selectList = new ArrayList<>(20);
 
-    @MainThread
-    static void performHighlightChange(RecyclerView.LayoutManager lm, OrientationHelper helper) {
+    public void setActiveList(@Nullable RecyclerView recyclerView) {
+        mActiveList = recyclerView;
+    }
+
+    private AvatarHighlighter(@NonNull RecyclerView avatarList, @NonNull RecyclerView introductionView) {
+        mAvatarList = avatarList;
+        mAvatarListHelper = OrientationHelper.createHorizontalHelper(mAvatarList.getLayoutManager());
+        avatarList.addOnScrollListener(new HighlightDetector());
+        introductionView.addOnScrollListener(new HighlightDetector());
+        // set default active list to avatar list
+        setActiveList(avatarList);
+    }
+
+    private void handleScrollChangeOnIdle() {
+        // use avatar list
+        RecyclerView.LayoutManager lm = mAvatarList.getLayoutManager();
+        if (lm != null) {
+            performHighlightChange(lm, mAvatarListHelper);
+        }
+    }
+
+    private class HighlightDetector extends RecyclerView.OnScrollListener {
+        OrientationHelper helper;
+        @Override
+        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+            if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                mActiveList = recyclerView;
+            }
+            if (recyclerView == mActiveList && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                handleScrollChangeOnIdle();
+            }
+        }
+
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            if (recyclerView == mActiveList && recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
+                handleScrollChangeOnIdle();
+            }
+        }
+    }
+
+    private void performHighlightChange(RecyclerView.LayoutManager lm, OrientationHelper helper) {
         final int childCount = lm.getChildCount();
         if (childCount == -1) {
             return;

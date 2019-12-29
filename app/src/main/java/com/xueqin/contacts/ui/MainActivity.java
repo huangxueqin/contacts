@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private AvatarListAdapter mAvatarListAdapter;
     private IntroductionListAdapter mIntroductionListAdapter;
 
+    private AvatarHighlighter mHighlighter;
     private ContactScrollSynchronizer mScrollSynchronizer;
 
     @Override
@@ -81,9 +82,10 @@ public class MainActivity extends AppCompatActivity {
         mDividerView = findViewById(R.id.divider);
         initAvatarListView();
         initIntroductionListView();
+        // add highlight support
+        mHighlighter = AvatarHighlighter.trackHighlight(mAvatarListView, mIntroductionListView);
         // sync the scroll behavior of the two list
         mScrollSynchronizer = ContactScrollSynchronizer.syncContactScroll(mAvatarListView, mIntroductionListView);
-
     }
 
     private void initAvatarListView() {
@@ -96,12 +98,11 @@ public class MainActivity extends AppCompatActivity {
         // init adapter
         mAvatarListAdapter = new AvatarListAdapter(this);
         mAvatarListView.setAdapter(mAvatarListAdapter);
-        // add highlight support
-        AvatarHighlighter.trackHighlight(mAvatarListView);
         // add click listener
         mAvatarListAdapter.setOnAvatarItemClickListener(new AvatarListAdapter.OnAvatarItemClickListener() {
             @Override
             public void onClicked(View itemView, int position) {
+                mHighlighter.setActiveList(mAvatarListView);
                 mScrollSynchronizer.setAvatarListActive();
                 AvatarListSlowScrollHelper.smoothScrollToPosition(mAvatarListView, position, 500);
             }
