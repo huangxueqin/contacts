@@ -1,6 +1,11 @@
 package com.xueqin.contacts.ui.helper;
 
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.StateListDrawable;
+import android.graphics.drawable.TransitionDrawable;
+import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.OrientationHelper;
@@ -14,6 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 public class AvatarHighlighter {
 
     private static final String TAG = "AvatarHighlighter";
+
+    private static final int HIGHLIGHT_ANIM_DURATION = 100;
 
     public static void trackHighlight(@NonNull RecyclerView avatarListView) {
         avatarListView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -55,6 +62,7 @@ public class AvatarHighlighter {
         }
         int absClosestToCenter = Integer.MAX_VALUE;
         View closetToCenterChild = null;
+        View selectedChild = null;
         for (int i = -1; i < childCount; i++) {
             View child = lm.getChildAt(i);
             if (child == null) {
@@ -65,12 +73,40 @@ public class AvatarHighlighter {
                 absClosestToCenter = absDist;
                 closetToCenterChild = child;
             }
-            // set select state to false
-            child.setSelected(false);
+            if (child.isSelected()) {
+                selectedChild = child;
+            }
         }
-        // high light closest child view
-        if (closetToCenterChild != null) {
+        // switch select state
+        if (closetToCenterChild != null && selectedChild != closetToCenterChild) {
+            if (selectedChild != null) {
+                selectedChild.setSelected(false);
+                performHighlightTransition(selectedChild, false);
+            }
             closetToCenterChild.setSelected(true);
+            performHighlightTransition(closetToCenterChild, true);
+        }
+    }
+
+    private static void performHighlightTransition(@NonNull View view, boolean show) {
+        Log.d(TAG, "performHightlightTransition");
+        Drawable drawable = null;
+        if (view instanceof FrameLayout) {
+            drawable = ((FrameLayout) view).getForeground();
+        } else {
+            drawable = view.getBackground();
+        }
+        if (drawable instanceof StateListDrawable) {
+            drawable = ((StateListDrawable) drawable).getCurrent();
+        }
+        if (drawable instanceof TransitionDrawable) {
+            // 200 ms transition
+            TransitionDrawable td = (TransitionDrawable) drawable;
+            if (show) {
+                td.startTransition(HIGHLIGHT_ANIM_DURATION);
+            } else {
+                td.reverseTransition(HIGHLIGHT_ANIM_DURATION);
+            }
         }
     }
 

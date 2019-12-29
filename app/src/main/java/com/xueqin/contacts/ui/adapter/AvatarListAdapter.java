@@ -56,6 +56,8 @@ public class AvatarListAdapter extends RecyclerView.Adapter<AvatarListAdapter.Av
     @SuppressWarnings("all")
     @Override
     public void onBindViewHolder(@NonNull AvatarViewHolder holder, int position) {
+        // clear select state
+        holder.itemView.setSelected(false);
         SimpleImageLoader.getInstance().loadAvatar(holder.avatarView, mContactList.get(position).getAvatarFileName());
     }
 

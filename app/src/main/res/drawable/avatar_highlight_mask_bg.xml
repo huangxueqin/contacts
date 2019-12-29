@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_selected="true">
-        <inset
-            android:insetLeft="@dimen/avatar_highlight_inset"
-            android:insetTop="@dimen/avatar_highlight_inset"
-            android:insetRight="@dimen/avatar_highlight_inset"
-            android:insetBottom="@dimen/avatar_highlight_inset">
-            <shape android:shape="oval">
-                <stroke android:color="@color/avatar_highlight"
-                    android:width="@dimen/avatar_highlight_width" />
-            </shape>
-        </inset>
+        <transition>
+            <item android:drawable="@android:color/transparent" />
+            <item android:drawable="@drawable/avatar_highlight_circle" />
+        </transition>
     </item>
 </selector>
