@@ -1,6 +1,6 @@
 package com.xueqin.contacts.data
 
-import com.xueqin.contacts.data.helper.CONTACT_JSON
+import com.xueqin.contacts.data.helper.getTestContactJson
 import com.xueqin.contacts.data.util.ContactParser
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -16,7 +16,7 @@ class ContactParserUnitTest {
 
     @Test
     fun contactInfo_parseSuccess() {
-        val contactJo = CONTACT_JSON
+        val contactJo = getTestContactJson()
         val contactInfo = ContactParser.parseContactInfo(contactJo)
         assertNotNull(contactInfo)
         assertEquals("first name parsed", contactJo.getString("first_name"), contactInfo?.firstName)
@@ -28,7 +28,7 @@ class ContactParserUnitTest {
 
     @Test
     fun contactInfoWithoutFirstName_parseFail() {
-        val contactJo = CONTACT_JSON
+        val contactJo = getTestContactJson()
         contactJo.put("first_name", "")
         assertNull(ContactParser.parseContactInfo(contactJo))
     }
