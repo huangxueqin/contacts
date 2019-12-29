@@ -19,11 +19,31 @@ class ContactParserUnitTest {
         val contactJo = getTestContactJson()
         val contactInfo = ContactParser.parseContactInfo(contactJo)
         assertNotNull(contactInfo)
-        assertEquals("first name parsed", contactJo.getString("first_name"), contactInfo?.firstName)
-        assertEquals("last name parsed", contactJo.getString("last_name"), contactInfo?.lastName)
-        assertEquals("title parsed", contactJo.getString("title"), contactInfo?.title)
-        assertEquals("avatar filename parsed", contactJo.getString("avatar_filename"), contactInfo?.avatarFileName)
-        assertEquals("introduction parsed" ,contactJo.getString("introduction"), contactInfo?.introduction)
+        assertEquals(
+            "first name parsed",
+            contactJo.getString("first_name"),
+            contactInfo?.firstName
+        )
+        assertEquals(
+            "last name parsed",
+            contactJo.getString("last_name"),
+            contactInfo?.lastName
+        )
+        assertEquals(
+            "title parsed",
+            contactJo.getString("title"),
+            contactInfo?.title
+        )
+        assertEquals(
+            "avatar filename parsed",
+            contactJo.getString("avatar_filename"),
+            contactInfo?.avatarUrl
+        )
+        assertEquals(
+            "introduction parsed" ,
+            contactJo.getString("introduction"),
+            contactInfo?.introduction
+        )
     }
 
     @Test

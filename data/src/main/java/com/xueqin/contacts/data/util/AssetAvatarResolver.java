@@ -10,10 +10,12 @@ public class AssetAvatarResolver {
     private static final String AVATAR_FILE_EXTENSION = ".png";
 
     @NonNull
-    public static String getAvatarPathInAsset(@NonNull DisplayMetrics dm, @NonNull String url) {
-        String avatarFilename = url;
-        if (avatarFilename.indexOf('.') > 0) {
-            avatarFilename = avatarFilename.split("\\.")[0];
+    public static String getAvatarPathInAsset(@NonNull DisplayMetrics dm, @NonNull String baseName) {
+        final String avatarFilename;
+        if (baseName.indexOf('.') > 0) {
+            avatarFilename = baseName.split("\\.")[0];
+        } else {
+            avatarFilename = baseName;
         }
         String filenameByDpi = getAvatarFilenameForScreenDpi(dm, avatarFilename);
         return AVATAR_FOLDER + "/" + filenameByDpi + AVATAR_FILE_EXTENSION;

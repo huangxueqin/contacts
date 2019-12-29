@@ -1,21 +1,20 @@
 package com.xueqin.contacts;
 
 import android.app.Application;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.os.Build;
 
-import com.xueqin.contact.provider.ContactAvatarProvider;
-import com.xueqin.contacts.data.util.IOUtils;
-import com.xueqin.contacts.loader.ImageDownloader;
 import com.xueqin.contacts.loader.SimpleImageLoader;
-import com.xueqin.contacts.provider.ContactProviderManager;
+import com.xueqin.contacts.loader.UrlLoader;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 public class ContactApp extends Application {
+
+    private static final String SCHEME_ASSET = "asset://";
 
     @Override
     public void onCreate() {
@@ -24,20 +23,29 @@ public class ContactApp extends Application {
     }
 
     private void initImageLoader() {
-        SimpleImageLoader.getInstance().setImageDownloader(new ImageDownloader() {
+        // set placeholder
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            SimpleImageLoader.getInstance()
+                    .setPlaceholderDrawable(getDrawable(R.drawable.ic_launcher_foreground));
+        } else {
+            SimpleImageLoader.getInstance()
+                    .setPlaceholderDrawable(getResources()
+                            .getDrawable(R.drawable.ic_launcher_foreground));
+        }
+        // set custom asset url loader
+        SimpleImageLoader.getInstance().addCustomUrlLoader(new UrlLoader() {
+            @Override
+            public boolean canHandle(@NotNull String url) {
+                return url.startsWith(SCHEME_ASSET);
+            }
+
             @Nullable
             @Override
-            public Bitmap download(@NotNull String url) {
-                final ContactAvatarProvider provider = ContactProviderManager.getInstance()
-                        .getProvider(ContactAvatarProvider.class.getName());
-                if (provider != null) {
-                    InputStream is = null;
-                    try {
-                        is = provider.getContactAvatar(ContactApp.this, url);
-                        return BitmapFactory.decodeStream(is);
-                    } finally {
-                        IOUtils.closeQuietly(is);
-                    }
+            public InputStream open(@NotNull String url) {
+                try {
+                    return getAssets().open(url.substring(SCHEME_ASSET.length()));
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
                 return null;
             }

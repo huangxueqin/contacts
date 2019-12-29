@@ -26,15 +26,15 @@ public class ContactParser {
             String lastName = jsonObject.getString("last_name");
             String title = jsonObject.getString("title");
             String introduction = jsonObject.getString("introduction");
-            String avatarFileName = jsonObject.getString("avatar_filename");
 
             if (TextUtils.isEmpty(firstName) ||
                     TextUtils.isEmpty(lastName) ||
                     TextUtils.isEmpty(title) ||
-                    TextUtils.isEmpty(introduction) ||
-                    TextUtils.isEmpty(avatarFileName)) {
+                    TextUtils.isEmpty(introduction)) {
                 return null;
             }
+
+            String avatarFileName = jsonObject.getString("avatar_filename");
 
             return new ContactInfo(firstName, lastName, title, introduction, avatarFileName);
         } catch (JSONException e) {

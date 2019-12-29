@@ -1,6 +1,8 @@
 package com.xueqin.contacts.loader;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -12,8 +14,13 @@ import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.xueqin.contacts.data.util.IOUtils;
+
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -40,7 +47,12 @@ public class SimpleImageLoader {
     private LruCache<String, Bitmap> mMemoryCache;
     private ExecutorService mLoadExecutors;
     private Handler mMainHandler;
-    private ImageDownloader mDownloader = ImageDownloaderKt.getNullDownloader();
+
+    @NonNull
+    private LinkedList<UrlLoader> mUrlLoaders;
+
+    @Nullable
+    private Drawable mPlaceholderDrawable = null;
 
     private LinkedHashMap<Integer, LoadInfo> mPendingLoadMap;
 
@@ -49,10 +61,19 @@ public class SimpleImageLoader {
         mLoadExecutors = createAvatarLoadExecutor();
         mMainHandler = new Handler(Looper.getMainLooper());
         mPendingLoadMap = new LinkedHashMap<>();
+        // init url loaders
+        mUrlLoaders = new LinkedList<>(Arrays.asList(
+                UrlLoaderKt.getFileUrlLoader(),
+                UrlLoaderKt.getHttpUrlLoader()
+        ));
     }
 
-    public void setImageDownloader(@NonNull ImageDownloader downloader) {
-        mDownloader = downloader;
+    public void addCustomUrlLoader(@NonNull UrlLoader urlLoader) {
+        mUrlLoaders.addFirst(urlLoader);
+    }
+
+    public void setPlaceholderDrawable(@Nullable Drawable drawable) {
+        mPlaceholderDrawable = drawable;
     }
 
     @MainThread
@@ -73,6 +94,28 @@ public class SimpleImageLoader {
         }
     }
 
+    private Bitmap decodeBitmapFromUrl(@NonNull String url /*,int suggestWith, int suggestHeight*/) {
+        Bitmap image = null;
+        for (UrlLoader loader : mUrlLoaders) {
+            if (!loader.canHandle(url)) {
+                continue;
+            }
+            InputStream is = null;
+            try {
+                is = loader.open(url);
+                image = BitmapFactory.decodeStream(is);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                IOUtils.closeQuietly(is);
+            }
+            if (image != null) {
+                break;
+            }
+        }
+        return image;
+    }
+
     private class AvatarLoadTask implements Runnable {
         private int viewId;
         private String url;
@@ -84,7 +127,7 @@ public class SimpleImageLoader {
 
         @Override
         public void run() {
-            final Bitmap avatar = mDownloader.download(url);
+            final Bitmap imageBitmap = decodeBitmapFromUrl(url);
             mMainHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -92,13 +135,17 @@ public class SimpleImageLoader {
                     if (li != null && TextUtils.equals(li.key, url)) {
                         ImageView iv = li.getImageView();
                         if (iv != null) {
-                            iv.setImageBitmap(avatar);
+                            if (imageBitmap == null) {
+                                iv.setImageDrawable(mPlaceholderDrawable);
+                            } else {
+                                iv.setImageBitmap(imageBitmap);
+                            }
                         }
                         // remove from mPendingLoadMap
                         mPendingLoadMap.remove(viewId);
                         // add avatar info memory cache
-                        if (avatar != null) {
-                            mMemoryCache.put(url, avatar);
+                        if (imageBitmap != null) {
+                            mMemoryCache.put(url, imageBitmap);
                         }
                     }
                 }
