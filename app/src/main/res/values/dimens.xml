@@ -9,6 +9,8 @@
     <dimen name="avatar_list_margin_top">30dp</dimen>
     <dimen name="avatar_list_margin_bottom">20dp</dimen>
 
+    <dimen name="introduction_content_padding">16dp</dimen>
+
     <dimen name="user_name_size">18sp</dimen>
     <dimen name="user_title_size">14sp</dimen>
     <dimen name="user_introduction_size">14sp</dimen>
